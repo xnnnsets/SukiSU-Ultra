@@ -41,13 +41,13 @@ setup_kernelsu() {
     echo "[+] Setting up KernelSU..."
     # Clone the repository
     if [ ! -d "$KERNEL_ROOT/KernelSU" ]; then
-        git clone https://github.com/SukiSU-Ultra/SukiSU-Ultra KernelSU
+        git clone https://github.com/xnnnsets/SukiSU-Ultra KernelSU
         echo "[+] Repository cloned."
     fi
     cd "$KERNEL_ROOT/KernelSU"
     git stash && echo "[-] Stashed current changes."
     if [ "$(git status | grep -Po 'v\d+(\.\d+)*' | head -n1)" ]; then
-        git checkout main && echo "[-] Switched to main branch."
+        git checkout susfs-k-6.6 && echo "[-] Switched to susfs-k-6.6 branch."
     fi
     git pull && echo "[+] Repository updated."
     if [ -z "${1-}" ]; then
