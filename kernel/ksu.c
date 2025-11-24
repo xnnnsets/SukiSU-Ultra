@@ -103,9 +103,9 @@ void kernelsu_exit(void)
 
 #if defined(KSU_KPROBES_HOOK) && !defined(CONFIG_KSU_SUSFS)
     ksu_ksud_exit();
-#endif // #if defined(KSU_KPROBES_HOOK) && !defined(CONFIG_KSU_SUSFS)
 
     ksu_syscall_hook_manager_exit();
+#endif // #if defined(KSU_KPROBES_HOOK) && !defined(CONFIG_KSU_SUSFS)
 
     sukisu_custom_config_exit();
 
