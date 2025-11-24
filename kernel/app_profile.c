@@ -12,7 +12,9 @@
 #include "app_profile.h"
 #include "klog.h" // IWYU pragma: keep
 #include "selinux/selinux.h"
+#ifndef CONFIG_KSU_SUSFS
 #include "syscall_hook_manager.h"
+#endif // #ifndef CONFIG_KSU_SUSFS
 #include "sucompat.h"
 
 #include "sulog.h"
@@ -85,7 +87,10 @@ void disable_seccomp(void)
 void escape_with_root_profile(void)
 {
     struct cred *cred;
+#ifndef CONFIG_KSU_SUSFS
     struct task_struct *p = current;
+#endif // #ifndef CONFIG_KSU_SUSFS
+
     struct task_struct *t;
 
     cred = prepare_creds();
@@ -146,9 +151,11 @@ void escape_with_root_profile(void)
     ksu_sulog_report_su_grant(current_euid().val, NULL, "escape_to_root");
 #endif
 
+#ifndef CONFIG_KSU_SUSFS
     for_each_thread (p, t) {
         ksu_set_task_tracepoint_flag(t);
     }
+#endif // #ifndef CONFIG_KSU_SUSFS
 }
 
 #ifdef CONFIG_KSU_MANUAL_SU

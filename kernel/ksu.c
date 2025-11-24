@@ -5,11 +5,17 @@
 #include <linux/workqueue.h>
 #include <linux/version.h>
 
+#ifdef CONFIG_KSU_SUSFS
+#include <linux/susfs.h>
+#endif // #ifdef CONFIG_KSU_SUSFS
+
 #include "allowlist.h"
 #include "feature.h"
 #include "klog.h" // IWYU pragma: keep
 #include "throne_tracker.h"
+#ifndef CONFIG_KSU_SUSFS
 #include "syscall_hook_manager.h"
+#endif // #ifndef CONFIG_KSU_SUSFS
 #include "ksud.h"
 #include "supercalls.h"
 
@@ -56,7 +62,9 @@ int __init kernelsu_init(void)
 
     sukisu_custom_config_init();
 
+#ifndef CONFIG_KSU_SUSFS
     ksu_syscall_hook_manager_init();
+#endif // #ifndef CONFIG_KSU_SUSFS
 
     ksu_workqueue = alloc_ordered_workqueue("kernelsu_work_queue", 0);
 
@@ -64,11 +72,15 @@ int __init kernelsu_init(void)
 
     ksu_throne_tracker_init();
 
-#ifdef KSU_KPROBES_HOOK
+#ifdef CONFIG_KSU_SUSFS
+    susfs_init();
+#endif // #ifdef CONFIG_KSU_SUSFS
+
+#ifdef KSU_KPROBES_HOOK && !defined(CONFIG_KSU_SUSFS)
     ksu_ksud_init();
 #else
      pr_alert("KPROBES is disabled, KernelSU may not work, please check https://kernelsu.org/guide/how-to-integrate-for-non-gki.html");
-#endif
+#endif // #ifdef KSU_KPROBES_HOOK && !defined(CONFIG_KSU_SUSFS)
 
 #ifdef MODULE
 #ifndef CONFIG_KSU_DEBUG
@@ -89,9 +101,9 @@ void kernelsu_exit(void)
 
     destroy_workqueue(ksu_workqueue);
 
-#ifdef KSU_KPROBES_HOOK
+#ifdef KSU_KPROBES_HOOK && !defined(CONFIG_KSU_SUSFS)
     ksu_ksud_exit();
-#endif
+#endif // #ifdef KSU_KPROBES_HOOK && !defined(CONFIG_KSU_SUSFS)
 
     ksu_syscall_hook_manager_exit();
 
