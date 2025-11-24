@@ -5,6 +5,7 @@
 #include <linux/seccomp.h>
 #include <linux/thread_info.h>
 #include <linux/uidgid.h>
+#include <linux/tty.h>
 #include <linux/version.h>
 #include "objsec.h"
 
@@ -302,9 +303,11 @@ void escape_to_root_for_cmd_su(uid_t target_uid, pid_t target_pid)
 #if __SULOG_GATE
     ksu_sulog_report_su_grant(target_uid, "cmd_su", "manual_escalation");
 #endif
+#ifndef CONFIG_KSU_SUSFS
     for_each_thread (p, t) {
         ksu_set_task_tracepoint_flag(t);
     }
+#endif // #ifndef CONFIG_KSU_SUSFS
     pr_info("cmd_su: privilege escalation completed for UID: %d, PID: %d\n", target_uid, target_pid);
 }
 #endif
