@@ -76,11 +76,11 @@ int __init kernelsu_init(void)
     susfs_init();
 #endif // #ifdef CONFIG_KSU_SUSFS
 
-#ifdef KSU_KPROBES_HOOK && !defined(CONFIG_KSU_SUSFS)
+#if defined(KSU_KPROBES_HOOK) && !defined(CONFIG_KSU_SUSFS)
     ksu_ksud_init();
 #else
      pr_alert("KPROBES is disabled, KernelSU may not work, please check https://kernelsu.org/guide/how-to-integrate-for-non-gki.html");
-#endif // #ifdef KSU_KPROBES_HOOK && !defined(CONFIG_KSU_SUSFS)
+#endif // #if defined(KSU_KPROBES_HOOK) && !defined(CONFIG_KSU_SUSFS)
 
 #ifdef MODULE
 #ifndef CONFIG_KSU_DEBUG
@@ -101,9 +101,9 @@ void kernelsu_exit(void)
 
     destroy_workqueue(ksu_workqueue);
 
-#ifdef KSU_KPROBES_HOOK && !defined(CONFIG_KSU_SUSFS)
+#if defined(KSU_KPROBES_HOOK) && !defined(CONFIG_KSU_SUSFS)
     ksu_ksud_exit();
-#endif // #ifdef KSU_KPROBES_HOOK && !defined(CONFIG_KSU_SUSFS)
+#endif // #if defined(KSU_KPROBES_HOOK) && !defined(CONFIG_KSU_SUSFS)
 
     ksu_syscall_hook_manager_exit();
 
